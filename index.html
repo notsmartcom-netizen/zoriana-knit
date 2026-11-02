@@ -174,7 +174,7 @@ footer {
 <div id="success" class="notice success"></div>
 <div id="error" class="notice error"></div>
 </form>
-const botToken = '9051775745:AAEk19Tgiy7fdQoGsK-9BMmZ9au3EEbuZF4';
+
 <footer>© ZORIANA knit · Handmade with care</footer>
 </main>
 
@@ -196,7 +196,7 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
   submitBtn.textContent = 'Відправка...';
 
   const formData = new FormData(form);
-  const botToken = '9228434130:AAGBd65e08vMbEDNUoFp02FHYS8YpSFx3eA';
+  const botToken = '9051775745:AAEk19Tgiy7fdQoGsK-9BMmZ9au3EEbuZF4';
   const chatId = '627507383';
 
   let message = `📦 *Нове замовлення з сайту*\n\n`;
@@ -208,36 +208,28 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
 
   fetch(`https://telegram.org{botToken}/sendMessage`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text: message,
-      parse_mode: 'Markdown'
-    })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'Markdown' })
   })
   .then(response => {
-    if (!response.ok) {
-      throw new Error('Помилка сервера Telegram');
-    }
-    return response.json();
+    return response.json().then(data => {
+      if (!response.ok || !data.ok) {
+        throw new Error(data.description || 'Помилка сервера');
+      }
+      return data;
+    });
   })
   .then(data => {
-    if (data.ok) {
-      successDiv.style.display = 'block';
-      successDiv.classList.add('show');
-      successDiv.textContent = '✅ Заявку успішно відправлено! Скоро ми з вами зв\'яжемося.';
-      form.reset();
-    } else {
-      throw new Error(data.description);
-    }
+    successDiv.style.display = 'block';
+    successDiv.classList.add('show');
+    successDiv.textContent = '✅ Заявку успішно відправлено!';
+    form.reset();
   })
   .catch(error => {
     console.error('Помилка:', error);
     errorDiv.style.display = 'block';
     errorDiv.classList.add('show');
-    errorDiv.textContent = '❌ Сталася помилка при відправці. Спробуйте пізніше.';
+    errorDiv.textContent = '❌ Помилка Telegram: ' + error.message;
   })
   .finally(() => {
     submitBtn.disabled = false;
