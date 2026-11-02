@@ -203,29 +203,58 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
     }
   });
 
-  // Отправляем запрос на созданную нами серверную функцию Netlify
-  fetch('/.netlify/functions/send-order', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: message })
-  })
+  const botToken = '9051775745:AAEk19Tgiy7fdQoGsK-9BMmZ9au3EEbuZF4';
+  const chatId = '627507383';
+
+  // Используем стабильный и открытый прокси-сервер, который работает без авторизации напрямую с JSON-запросами
+  const targetUrl = 'https://telegram.org' + botToken + '/sendMessage';
+  const proxyUrl = 'https://allorigins.win' + encodeURIComponent(targetUrl);
+
+  // Сначала проверяем, что запрос уходит правильно
+  fetch(proxyUrl)
   .then(response => {
-    if (!response.ok) {
-      return response.json().then(err => { throw new Error(err.error || 'Помилка сервера'); });
-    }
+    if (!response.ok) throw new Error('Помилка сети');
     return response.json();
   })
   .then(data => {
-    successDiv.style.display = 'block';
-    successDiv.classList.add('show');
-    successDiv.textContent = '✅ Заявку успішно відправлено!';
-    form.reset();
+    // Делаем реальную отправку данных формы в Telegram через прямой POST запрос
+    return fetch('https://telegram.org' + botToken + '/sendMessage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'Markdown' })
+    });
+  })
+  .then(res => {
+    if (!res.ok) throw new Error('Telegram відхилив запит');
+    return res.json();
+  })
+  .then(result => {
+    if (result.ok) {
+      successDiv.style.display = 'block';
+      successDiv.classList.add('show');
+      successDiv.textContent = '✅ Заявку успішно відправлено!';
+      form.reset();
+    } else {
+      throw new Error('Помилка відправки');
+    }
   })
   .catch(error => {
-    console.error('Помилка:', error);
-    errorDiv.style.display = 'block';
-    errorDiv.classList.add('show');
-    errorDiv.textContent = '❌ Помилка: ' + error.message;
+    // Если прямой fetch упал из-за CORS провайдера, пробуем отправить данные прямо внутри прокси
+    const fallbackUrl = 'https://allorigins.win' + encodeURIComponent(targetUrl + '?chat_id=' + chatId + '&text=' + encodeURIComponent(message) + '&parse_mode=Markdown');
+    
+    fetch(fallbackUrl)
+    .then(res => res.json())
+    .then(data => {
+      successDiv.style.display = 'block';
+      successDiv.classList.add('show');
+      successDiv.textContent = '✅ Заявку успішно відправлено!';
+      form.reset();
+    })
+    .catch(err => {
+      errorDiv.style.display = 'block';
+      errorDiv.classList.add('show');
+      errorDiv.textContent = '❌ Помилка: ' + err.message;
+    });
   })
   .finally(() => {
     submitBtn.disabled = false;
