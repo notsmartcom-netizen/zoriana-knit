@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZORIANA knit</title>
+<style>
+:root {
+  --brown:#795438;
+  --soft:#f8f1e8;
+  --line:#d8c2ad;
+  --ink:#4d392b;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;
+  padding:28px 16px 48px;
+  color:var(--ink);
+  background:var(--soft);
+  font-family:Arial,sans-serif;
+}
+.wrap {
+  width:min(100%,720px);
+  margin:auto;
+}
+header {
+  text-align:center;
+  padding:24px 16px 30px;
+}
+.logo {
+  width:min(100%,340px);
+  aspect-ratio:1;
+  margin:0 auto 18px;
+  border:5px double #b99578;
+  border-radius:50%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  color:var(--brown);
+  padding:20px;
+}
+.yarn {font-size:54px;line-height:1.2}
+.brand {
+  font-family:Georgia,serif;
+  font-size:clamp(30px,8vw,49px);
+  letter-spacing:.15em;
+}
+.script {
+  font-family:cursive;
+  font-size:clamp(28px,7vw,42px);
+  font-style:italic;
+}
+.tagline {
+  margin-top:18px;
+  letter-spacing:.22em;
+  font-size:12px;
+}
+h1 {
+  font:normal 26px Georgia,serif;
+  text-align:center;
+  margin:8px 0 10px;
+}
+.intro {
+  text-align:center;
+  line-height:1.6;
+  max-width:540px;
+  margin:0 auto 26px;
+}
+form {
+  background:#fffaf4;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:24px;
+  box-shadow:0 8px 28px #79543812;
+}
+label {
+  display:block;
+  margin:16px 0 7px;
+  font-weight:600;
+}
+input,select,textarea {
+  width:100%;
+  padding:13px 14px;
+  border:1px solid #cdb69f;
+  border-radius:10px;
+  background:white;
+  color:var(--ink);
+  font:inherit;
+}
+textarea {
+  min-height:100px;
+  resize:vertical;
+}
+button {
+  width:100%;
+  margin-top:22px;
+  padding:15px;
+  border:0;
+  border-radius:10px;
+  background:var(--brown);
+  color:white;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+}
+button:hover {background:#62432d}
+.notice {
+  display:none;
+  margin-top:16px;
+  padding:14px;
+  border-radius:10px;
+  line-height:1.5;
+}
+.notice.show {display:block}
+.success {background:#edf5e9;color:#31552c}
+.error {background:#fff0ed;color:#8a3025}
+footer {
+  text-align:center;
+  margin-top:24px;
+  font-size:13px;
+  opacity:.75;
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header>
+<div class="logo">
+<div class="yarn">🧶 ♡</div>
+<div class="brand">ZORIANA</div>
+<div class="script">knit</div>
+<div class="tagline">HANDMADE CARDIGANS</div>
+</div>
+
+<h1>Речі, створені з теплом</h1>
+<p class="intro">
+В'язані кардигани та аксесуари ручної роботи.
+Залиште заявку, щоб обговорити виріб,
+розмір і колір.
+</p>
+</header>
+
+<form id="orderForm">
+
+<label for="name">Ваше ім'я *</label>
+<input id="name" name="name" required
+placeholder="Наприклад, Олена">
+
+<label for="phone">Телефон *</label>
+<input id="phone" name="phone" type="tel"
+required placeholder="+380...">
+
+<label for="product">Виріб *</label>
+<input id="product" name="product" required
+placeholder="Кардиган / светр / шарф / шапка">
+
+<label for="size">Розмір</label>
+<input id="size" name="size"
+placeholder="S / M / L або в сантиметрах">
+
+<label for="color">Колір пряжі</label>
+<input id="color" name="color"
+placeholder="Бежевий, блакитний, червоний...">
+
+<label for="delivery">Отримання</label>
+<select id="delivery" name="delivery">
+<option>Самовивіз</option>
+<option>Нова Пошта</option>
+<option>Укрпошта</option>
+<option>Доставка кур'єром</option>
+</select>
+
+<label for="comment">Коментар</label>
+<textarea id="comment" name="comment"
+placeholder="Побажання, уточнення..."></textarea>
+
+<button type="submit">Надіслати заявку</button>
+
+<div id="success" class="notice success">
+Дякуємо! Форма працює в режимі попереднього перегляду.
+Для отримання заявок у Telegram потрібно підключити бота.
+</div>
+
+<div id="error" class="notice error"></div>
+</form>
+
+<footer>© ZORIANA knit · Handmade with care</footer>
+</main>
+
+<script>
+const form = document.getElementById('orderForm');
+const success = document.getElementById('success');
+const error = document.getElementById('error');
+
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
+  success.classList.remove('show');
+  error.classList.remove('show');
+
+  if (!form.reportValidity()) return;
+
+  success.classList.add('show');
+  form.reset();
+});
+</script>
+</body>
+</html>
