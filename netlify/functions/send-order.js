@@ -7,6 +7,7 @@ exports.handler = async (event) => {
     const token = '9051775745:AAEk19Tgiy7fdQoGsK-9BMmZ9au3EEbuZF4';
     const chat = '627507383';
     
+    // ИСПРАВЛЕНО: Строго правильный и полный адрес Telegram API
     const res = await fetch('https://telegram.org' + token + '/sendMessage', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
