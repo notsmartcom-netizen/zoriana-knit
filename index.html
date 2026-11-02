@@ -206,7 +206,11 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
     }
   });
 
-  fetch(`https://telegram.org{botToken}/sendMessage`, {
+  // Используем бесплатный CORS-прокси cors-anywhere для обхода защиты браузера
+  const telegramUrl = `https://telegram.org{botToken}/sendMessage`;
+  const proxyUrl = 'https://corsproxy.io?' + encodeURIComponent(telegramUrl);
+
+  fetch(proxyUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'Markdown' })
@@ -229,7 +233,7 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
     console.error('Помилка:', error);
     errorDiv.style.display = 'block';
     errorDiv.classList.add('show');
-    errorDiv.textContent = '❌ Помилка Telegram: ' + error.message;
+    errorDiv.textContent = '❌ Помилка: ' + error.message;
   })
   .finally(() => {
     submitBtn.disabled = false;
