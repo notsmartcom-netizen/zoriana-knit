@@ -141,31 +141,25 @@ footer {
 </p>
 </header>
 
-<form id="orderForm" ...>
-
+<form id="orderForm">
 
 <label for="name">Ваше ім'я *</label>
-<input id="name" name="name" required
-placeholder="Наприклад, Олена">
+<input id="name" name="Имя" required placeholder="Наприклад, Олена">
 
 <label for="phone">Телефон *</label>
-<input id="phone" name="phone" type="tel"
-required placeholder="+380...">
+<input id="phone" name="Телефон" type="tel" required placeholder="+380...">
 
 <label for="product">Виріб *</label>
-<input id="product" name="product" required
-placeholder="Кардиган / светр / шарф / шапка">
+<input id="product" name="Изделие" required placeholder="Кардиган / светр / шарф / шапка">
 
 <label for="size">Розмір</label>
-<input id="size" name="size"
-placeholder="S / M / L або в сантиметрах">
+<input id="size" name="Размер" placeholder="S / M / L або в сантиметрах">
 
 <label for="color">Колір пряжі</label>
-<input id="color" name="color"
-placeholder="Бежевий, блакитний, червоний...">
+<input id="color" name="Цвет" placeholder="Бежевий, блакитний, червоний...">
 
 <label for="delivery">Отримання</label>
-<select id="delivery" name="delivery">
+<select id="delivery" name="Доставка">
 <option>Самовивіз</option>
 <option>Нова Пошта</option>
 <option>Укрпошта</option>
@@ -173,16 +167,11 @@ placeholder="Бежевий, блакитний, червоний...">
 </select>
 
 <label for="comment">Коментар</label>
-<textarea id="comment" name="comment"
-placeholder="Побажання, уточнення..."></textarea>
+<textarea id="comment" name="Комментарий" placeholder="Побажання, уточнення..."></textarea>
 
-<button type="submit">Надіслати заявку</button>
+<button type="submit" id="submitBtn">Надіслати заявку</button>
 
-<div id="success" class="notice success">
-Дякуємо! Форма працює в режимі попереднього перегляду.
-Для отримання заявок у Telegram потрібно підключити бота.
-</div>
-
+<div id="success" class="notice success"></div>
 <div id="error" class="notice error"></div>
 </form>
 
@@ -190,73 +179,33 @@ placeholder="Побажання, уточнення..."></textarea>
 </main>
 
 <script>
-const form = document.getElementById('orderForm');
-const success = document.getElementById('success');
-const error = document.getElementById('error');
-
-form.addEventListener('submit', (event) => {
-  event.preventDefault();
-  success.classList.remove('show');
-  error.classList.remove('show');
-
-  if (!form.reportValidity()) return;
-
-  success.classList.add('show');
-  form.reset();
-});
-<script>
 document.getElementById('orderForm').addEventListener('submit', function(e) {
   e.preventDefault();
 
   const form = this;
-  const submitBtn = document.getElementById('submitBtn') || form.querySelector('button[type="submit"]');
-  
-  // Создаем элементы для уведомлений, если их еще нет в HTML
-  let successDiv = document.getElementById('success');
-  let errorDiv = document.getElementById('error');
-  
-  if (!successDiv) {
-    successDiv = document.createElement('div');
-    successDiv.id = 'success';
-    successDiv.style.color = 'green';
-    successDiv.style.marginTop = '10px';
-    successDiv.style.display = 'none';
-    form.appendChild(successDiv);
-  }
-  if (!errorDiv) {
-    errorDiv = document.createElement('div');
-    errorDiv.id = 'error';
-    errorDiv.style.color = 'red';
-    errorDiv.style.marginTop = '10px';
-    errorDiv.style.display = 'none';
-    form.appendChild(errorDiv);
-  }
+  const submitBtn = document.getElementById('submitBtn');
+  const successDiv = document.getElementById('success');
+  const errorDiv = document.getElementById('error');
 
-  // Скрываем прошлые сообщения и блокируем кнопку
   errorDiv.style.display = 'none';
   successDiv.style.display = 'none';
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Отправка...';
-  }
+  errorDiv.classList.remove('show');
+  successDiv.classList.remove('show');
 
-  // Собираем данные формы
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Відправка...';
+
   const formData = new FormData(form);
-  
-  // Ваши проверенные данные Telegram
   const botToken = '9228434130:AAGBd65e08vMbEDNUoFp02FHYS8YpSFx3eA';
-
   const chatId = '627507383';
 
-  // Формируем текст сообщения для Telegram
-  let message = `📦 *Новый заказ с сайта*\n\n`;
+  let message = `📦 *Нове замовлення з сайту*\n\n`;
   formData.forEach((value, key) => {
     if (value.trim() !== '') {
       message += `🔹 *${key}:* ${value}\n`;
     }
   });
 
-  // Отправляем запрос в Telegram API
   fetch(`https://telegram.org{botToken}/sendMessage`, {
     method: 'POST',
     headers: {
@@ -270,118 +219,31 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
   })
   .then(response => {
     if (!response.ok) {
-      throw new Error('Ошибка сети или неверные токены');
+      throw new Error('Помилка сервера Telegram');
     }
     return response.json();
   })
   .then(data => {
     if (data.ok) {
       successDiv.style.display = 'block';
-      successDiv.textContent = '✅ Заказ успешно отправлен! Скоро мы с вами свяжемся.';
-      form.reset(); // Очищаем форму после успешной отправки
+      successDiv.classList.add('show');
+      successDiv.textContent = '✅ Заявку успішно відправлено! Скоро ми з вами зв\'яжемося.';
+      form.reset();
     } else {
       throw new Error(data.description);
     }
   })
   .catch(error => {
-    console.error('Ошибка:', error);
+    console.error('Помилка:', error);
     errorDiv.style.display = 'block';
-    errorDiv.textContent = '❌ Произошла ошибка при отправке. Пожалуйста, попробуйте позже.';
+    errorDiv.classList.add('show');
+    errorDiv.textContent = '❌ Сталася помилка при відправці. Спробуйте пізніше.';
   })
   .finally(() => {
-    // Возвращаем кнопку в исходное состояние
-    if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Отправить заказ';
-    }
-  });
-});
-<script>
-document.getElementById('orderForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-
-  const form = this;
-  const submitBtn = document.getElementById('submitBtn') || form.querySelector('button[type="submit"]');
-  
-  let successDiv = document.getElementById('success');
-  let errorDiv = document.getElementById('error');
-  
-  if (!successDiv) {
-    successDiv = document.createElement('div');
-    successDiv.id = 'success';
-    successDiv.style.color = 'green';
-    successDiv.style.marginTop = '10px';
-    successDiv.style.display = 'none';
-    form.appendChild(successDiv);
-  }
-  if (!errorDiv) {
-    errorDiv = document.createElement('div');
-    errorDiv.id = 'error';
-    errorDiv.style.color = 'red';
-    errorDiv.style.marginTop = '10px';
-    errorDiv.style.display = 'none';
-    form.appendChild(errorDiv);
-  }
-
-  errorDiv.style.display = 'none';
-  successDiv.style.display = 'none';
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending...';
-  }
-
-  const formData = new FormData(form);
- const botToken = '9228434130:AAGBd65e08vMbEDNUoFp02FHYS8YpSFx3eA';
-
-  const chatId = '627507383';
-
-  let message = `📦 *New Order* \n\n`;
-  formData.forEach((value, key) => {
-    if (value.trim() !== '') {
-      message += `🔹 *${key}:* ${value}\n`;
-    }
-  });
-
-  fetch(`https://telegram.org{botToken}/sendMessage`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text: message,
-      parse_mode: 'Markdown'
-    })
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('API Error');
-    }
-    return response.json();
-  })
-  .then(data => {
-    if (data.ok) {
-      successDiv.style.display = 'block';
-      successDiv.textContent = '✅ Заказ успешно отправлен в Telegram!';
-      form.reset();
-    } else {
-      throw new Error('API OK False');
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    errorDiv.style.display = 'block';
-    errorDiv.textContent = '❌ Произошла ошибка отправки.';
-  })
-  .finally(() => {
-    if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Отправить заказ';
-    }
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Надіслати заявку';
   });
 });
 </script>
-
-
 </body>
 </html>
