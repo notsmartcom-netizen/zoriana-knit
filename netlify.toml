@@ -1,5 +1,0 @@
-[[redirects]]
-  from = "/api/telegram"
-  to = "https://telegram.org"
-  status = 200
-  force = true
