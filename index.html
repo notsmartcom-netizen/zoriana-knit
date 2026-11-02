@@ -295,7 +295,91 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
     }
   });
 });
+<script>
+document.getElementById('orderForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const form = this;
+  const submitBtn = document.getElementById('submitBtn') || form.querySelector('button[type="submit"]');
+  
+  let successDiv = document.getElementById('success');
+  let errorDiv = document.getElementById('error');
+  
+  if (!successDiv) {
+    successDiv = document.createElement('div');
+    successDiv.id = 'success';
+    successDiv.style.color = 'green';
+    successDiv.style.marginTop = '10px';
+    successDiv.style.display = 'none';
+    form.appendChild(successDiv);
+  }
+  if (!errorDiv) {
+    errorDiv = document.createElement('div');
+    errorDiv.id = 'error';
+    errorDiv.style.color = 'red';
+    errorDiv.style.marginTop = '10px';
+    errorDiv.style.display = 'none';
+    form.appendChild(errorDiv);
+  }
+
+  errorDiv.style.display = 'none';
+  successDiv.style.display = 'none';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
+  }
+
+  const formData = new FormData(form);
+  const botToken = '9228434130:AAGBd65eO8vMbEDNUoFp02FHYS8YpSFx3eA';
+  const chatId = '627507383';
+
+  let message = `📦 *New Order* \n\n`;
+  formData.forEach((value, key) => {
+    if (value.trim() !== '') {
+      message += `🔹 *${key}:* ${value}\n`;
+    }
+  });
+
+  fetch(`https://telegram.org{botToken}/sendMessage`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: message,
+      parse_mode: 'Markdown'
+    })
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('API Error');
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.ok) {
+      successDiv.style.display = 'block';
+      successDiv.textContent = '✅ Заказ успешно отправлен в Telegram!';
+      form.reset();
+    } else {
+      throw new Error('API OK False');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    errorDiv.style.display = 'block';
+    errorDiv.textContent = '❌ Произошла ошибка отправки.';
+  })
+  .finally(() => {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Отправить заказ';
+    }
+  });
+});
 </script>
+
 
 </body>
 </html>
