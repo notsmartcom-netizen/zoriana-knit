@@ -131,24 +131,25 @@ footer {
 </p>
 </header>
 
-<form id="orderForm">
+<!-- Встроенная форма Netlify Forms, которая без кода отправляет данные вам на почту -->
+<form name="orders" method="POST" data-netlify="true">
 <label for="name">Ваше ім'я *</label>
-<input id="name" required placeholder="Наприклад, Олена">
+<input type="text" id="name" name="Имя" required placeholder="Наприклад, Олена">
 
 <label for="phone">Телефон *</label>
-<input id="phone" type="tel" required placeholder="+380...">
+<input type="tel" id="phone" name="Телефон" required placeholder="+380...">
 
 <label for="product">Виріб *</label>
-<input id="product" required placeholder="Кардиган / светр / шарф / шапка">
+<input type="text" id="product" name="Изделие" required placeholder="Кардиган / светр / шарф / шапка">
 
 <label for="size">Розмір</label>
-<input id="size" placeholder="S / M / L або в сантиметрах">
+<input type="text" id="size" name="Размер" placeholder="S / M / L або в сантиметрах">
 
 <label for="color">Колір пряжі</label>
-<input id="color" placeholder="Бежевий, блакитний, червоний...">
+<input type="text" id="color" name="Цвет" placeholder="Бежевий, блакитний, червоний...">
 
 <label for="delivery">Отримання</label>
-<select id="delivery">
+<select id="delivery" name="Доставка">
 <option>Самовивіз</option>
 <option>Нова Пошта</option>
 <option>Укрпошта</option>
@@ -156,38 +157,12 @@ footer {
 </select>
 
 <label for="comment">Коментар</label>
-<textarea id="comment" placeholder="Побажання, уточнення..."></textarea>
+<textarea id="comment" name="Комментарий" placeholder="Побажання, уточнення..."></textarea>
 
-<button type="submit" id="submitBtn">Оформити в Telegram</button>
+<button type="submit">Надіслати заявку</button>
 </form>
 
 <footer>© ZORIANA knit · Handmade with care</footer>
 </main>
-
-<script>
-document.getElementById('orderForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-
-  var n = document.getElementById('name').value;
-  var p = document.getElementById('phone').value;
-  var pr = document.getElementById('product').value;
-  var s = document.getElementById('size').value || 'Не вказано';
-  var cl = document.getElementById('color').value || 'Не вказано';
-  var d = document.getElementById('delivery').value;
-  var c = document.getElementById('comment').value || 'Немає';
-
-  var text = "📦 Нове замовлення!\n\n" +
-             "🔹 Ім'я: " + n + "\n" +
-             "🔹 Телефон: " + p + "\n" +
-             "🔹 Виріб: " + pr + "\n" +
-             "🔹 Розмір: " + s + "\n" +
-             "🔹 Колір: " + cl + "\n" +
-             "🔹 Доставка: " + d + "\n" +
-             "🔹 Коментар: " + c;
-
-  var target = "https://t.me" + encodeURIComponent(text);
-  window.location.href = target;
-});
-</script>
 </body>
 </html>
