@@ -105,16 +105,6 @@ button {
   cursor:pointer;
 }
 button:hover {background:#62432d}
-.notice {
-  display:none;
-  margin-top:16px;
-  padding:14px;
-  border-radius:10px;
-  line-height:1.5;
-}
-.notice.show {display:block}
-.success {background:#edf5e9;color:#31552c}
-.error {background:#fff0ed;color:#8a3025}
 footer {
   text-align:center;
   margin-top:24px;
@@ -142,24 +132,23 @@ footer {
 </header>
 
 <form id="orderForm">
-
 <label for="name">Ваше ім'я *</label>
-<input id="name" name="Имя" required placeholder="Наприклад, Олена">
+<input id="name" required placeholder="Наприклад, Олена">
 
 <label for="phone">Телефон *</label>
-<input id="phone" name="Телефон" type="tel" required placeholder="+380...">
+<input id="phone" type="tel" required placeholder="+380...">
 
 <label for="product">Виріб *</label>
-<input id="product" name="Изделие" required placeholder="Кардиган / светр / шарф / шапка">
+<input id="product" required placeholder="Кардиган / светр / шарф / шапка">
 
 <label for="size">Розмір</label>
-<input id="size" name="Размер" placeholder="S / M / L або в сантиметрах">
+<input id="size" placeholder="S / M / L або в сантиметрах">
 
 <label for="color">Колір пряжі</label>
-<input id="color" name="Цвет" placeholder="Бежевий, блакитний, червоний...">
+<input id="color" placeholder="Бежевий, блакитний, червоний...">
 
 <label for="delivery">Отримання</label>
-<select id="delivery" name="Доставка">
+<select id="delivery">
 <option>Самовивіз</option>
 <option>Нова Пошта</option>
 <option>Укрпошта</option>
@@ -167,12 +156,9 @@ footer {
 </select>
 
 <label for="comment">Коментар</label>
-<textarea id="comment" name="Комментарий" placeholder="Побажання, уточнення..."></textarea>
+<textarea id="comment" placeholder="Побажання, уточнення..."></textarea>
 
-<button type="submit" id="submitBtn">Надіслати заявку</button>
-
-<div id="success" class="notice success"></div>
-<div id="error" class="notice error"></div>
+<button type="submit" id="submitBtn">Оформити в Telegram</button>
 </form>
 
 <footer>© ZORIANA knit · Handmade with care</footer>
@@ -182,62 +168,25 @@ footer {
 document.getElementById('orderForm').addEventListener('submit', function(e) {
   e.preventDefault();
 
-  const form = this;
-  const submitBtn = document.getElementById('submitBtn');
-  const successDiv = document.getElementById('success');
-  const errorDiv = document.getElementById('error');
+  const name = document.getElementById('name').value;
+  const phone = document.getElementById('phone').value;
+  const product = document.getElementById('product').value;
+  const size = document.getElementById('size').value || 'Не вказано';
+  const color = document.getElementById('color').value || 'Не вказано';
+  const delivery = document.getElementById('delivery').value;
+  const comment = document.getElementById('comment').value || 'Немає';
 
-  errorDiv.style.display = 'none';
-  successDiv.style.display = 'none';
-  errorDiv.classList.remove('show');
-  successDiv.classList.remove('show');
+  // Собираем красивый текст для отправки
+  const text = `📦 Нове замовлення!\n\n🔹 Ім'я: ${name}\n🔹 Телефон: ${phone}\n🔹 Виріб: ${product}\n🔹 Розмір: ${size}\n🔹 Колір: ${color}\n🔹 Доставка: ${delivery}\n🔹 Коментар: ${comment}`;
 
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'Відправка...';
-
-  const formData = new FormData(form);
-  let message = `📦 *Нове замовлення з сайту*\n\n`;
-  formData.forEach((value, key) => {
-    if (value.trim() !== '') {
-      message += `🔹 *${key}:* ${value}\n`;
-    }
-  });
-
-  const botToken = '9051775745:AAEk19Tgiy7fdQoGsK-9BMmZ9au3EEbuZF4';
-  const chatId = '627507383';
-
-  // Формируем чистый GET запрос. Данный метод всегда успешно проходит через прокси allorigins
-  const telegramApiUrl = 'https://telegram.org' + botToken + '/sendMessage?chat_id=' + chatId + '&text=' + encodeURIComponent(message) + '&parse_mode=Markdown';
-  const finalProxyUrl = 'https://allorigins.win' + encodeURIComponent(telegramApiUrl);
-
-  fetch(finalProxyUrl)
-  .then(response => {
-    if (!response.ok) throw new Error('Помилка з\'єднання');
-    return response.json();
-  })
-  .then(data => {
-    // Разбираем внутренний ответ от серверов Telegram
-    const telegramResponse = JSON.parse(data.contents);
-    
-    if (telegramResponse.ok) {
-      successDiv.style.display = 'block';
-      successDiv.classList.add('show');
-      successDiv.textContent = '✅ Заявку успішно відправлено!';
-      form.reset();
-    } else {
-      throw new Error(telegramResponse.description || 'Telegram відхилив запит');
-    }
-  })
-  .catch(error => {
-    console.error('Помилка:', error);
-    errorDiv.style.display = 'block';
-    errorDiv.classList.add('show');
-    errorDiv.textContent = '❌ Помилка: ' + error.message;
-  })
-  .finally(() => {
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Надіслати заявку';
-  });
+  // Ссылка на ваш личный аккаунт или на вашего нового бота (подставим юзернейм нового бота)
+  const telegramUrl = `https://t.me{encodeURIComponent(text)}`;
+  
+  // Альтернативный вариант (прямо вам в личные сообщения, если бот не нужен):
+  // const telegramUrl = `https://wa.me или t.me/ваш_юзернейм?text=...`
+  
+  // Открываем диалог в Telegram с готовым текстом
+  window.location.href = `https://t.me{encodeURIComponent(text)}`;
 });
 </script>
 </body>
