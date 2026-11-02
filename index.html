@@ -168,25 +168,25 @@ footer {
 document.getElementById('orderForm').addEventListener('submit', function(e) {
   e.preventDefault();
 
-  const name = document.getElementById('name').value;
-  const phone = document.getElementById('phone').value;
-  const product = document.getElementById('product').value;
-  const size = document.getElementById('size').value || 'Не вказано';
-  const color = document.getElementById('color').value || 'Не вказано';
-  const delivery = document.getElementById('delivery').value;
-  const comment = document.getElementById('comment').value || 'Немає';
+  var n = document.getElementById('name').value;
+  var p = document.getElementById('phone').value;
+  var pr = document.getElementById('product').value;
+  var s = document.getElementById('size').value || 'Не вказано';
+  var cl = document.getElementById('color').value || 'Не вказано';
+  var d = document.getElementById('delivery').value;
+  var c = document.getElementById('comment').value || 'Немає';
 
-  // Собираем красивый текст для отправки
-  const text = `📦 Нове замовлення!\n\n🔹 Ім'я: ${name}\n🔹 Телефон: ${phone}\n🔹 Виріб: ${product}\n🔹 Розмір: ${size}\n🔹 Колір: ${color}\n🔹 Доставка: ${delivery}\n🔹 Коментар: ${comment}`;
+  var text = "📦 Нове замовлення!\n\n" +
+             "🔹 Ім'я: " + n + "\n" +
+             "🔹 Телефон: " + p + "\n" +
+             "🔹 Виріб: " + pr + "\n" +
+             "🔹 Розмір: " + s + "\n" +
+             "🔹 Колір: " + cl + "\n" +
+             "🔹 Доставка: " + d + "\n" +
+             "🔹 Коментар: " + c;
 
-  // Ссылка на ваш личный аккаунт или на вашего нового бота (подставим юзернейм нового бота)
-  const telegramUrl = `https://t.me{encodeURIComponent(text)}`;
-  
-  // Альтернативный вариант (прямо вам в личные сообщения, если бот не нужен):
-  // const telegramUrl = `https://wa.me или t.me/ваш_юзернейм?text=...`
-  
-  // Открываем диалог в Telegram с готовым текстом
-  window.location.href = `https://t.me{encodeURIComponent(text)}`;
+  var target = "https://t.me" + encodeURIComponent(text);
+  window.location.href = target;
 });
 </script>
 </body>
