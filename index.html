@@ -135,7 +135,7 @@ footer {
 
 <h1>Речі, створені з теплом</h1>
 <p class="intro">
-В'язані кардигани та аксесуари ручної роботи.
+В'язані кардигани та аксессуари ручної роботи.
 Залиште заявку, щоб обговорити виріб,
 розмір і колір.
 </p>
@@ -203,29 +203,34 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
     }
   });
 
+  const botToken = '9051775745:AAEk19Tgiy7fdQoGsK-9BMmZ9au3EEbuZF4';
   const chatId = '627507383';
 
-  // Отправляем на наш внутренний безопасный прокси Netlify
-  fetch('/api/telegram', {
+  // Используем прямой и стабильный CORS-прокси corsproxy.io
+  const telegramUrl = 'https://telegram.org' + botToken + '/sendMessage';
+  const proxyUrl = 'https://corsproxy.io?' + encodeURIComponent(telegramUrl);
+
+  fetch(proxyUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'Markdown' })
   })
-  .then(res => {
-    if (!res.ok) throw new Error('Помилка сервера');
-    return res.json();
+  .then(response => {
+    return response.json().then(data => {
+      if (!response.ok || !data.ok) {
+        throw new Error(data.description || 'Помилка сервера');
+      }
+      return data;
+    });
   })
-  .then(result => {
-    if (result.ok) {
-      successDiv.style.display = 'block';
-      successDiv.classList.add('show');
-      successDiv.textContent = '✅ Заявку успішно відправнено!';
-      form.reset();
-    } else {
-      throw new Error('Помилка відправки');
-    }
+  .then(data => {
+    successDiv.style.display = 'block';
+    successDiv.classList.add('show');
+    successDiv.textContent = '✅ Заявку успішно відправлено!';
+    form.reset();
   })
   .catch(error => {
+    console.error('Помилка:', error);
     errorDiv.style.display = 'block';
     errorDiv.classList.add('show');
     errorDiv.textContent = '❌ Помилка: ' + error.message;
